@@ -17,17 +17,13 @@ txt = Entry(window,width=10)
 txt.grid(column=1, row=1)
 #r=txt.get()
 #button1-make folder
-path=""
+#path=""
 def mdir():
     r=txt.get()
     path='C:/Users/DELL/Downloads/Documents/image processing/imag_project-master/imag_project-master/images/'+r
     #newpath = r dir
     if not os.path.exists (path ):
         os.makedirs (path)
-btn1 = Button(window, text="ENTER",command =mdir)
-btn1.grid(column=4, row=1)
-#button2
-def clicked():
     face_cascade = cv2.CascadeClassifier ( 'cascades/data/haarcascade_frontalface_alt2.xml' )
     eye_cascade = cv2.CascadeClassifier ( 'cascades/data/haarcascade_eye.xml' )
     smile_cascade = cv2.CascadeClassifier ( 'cascades/data/haarcascade_smile.xml' )
@@ -40,13 +36,14 @@ def clicked():
         og_labels = pickle.load ( f )
         labels = {v: k for k, v in og_labels.items ()}
 
-    cap = cv2.VideoCapture (0)
-
+    cap = cv2.VideoCapture ( 0 )
+    pic_num = 1
     while (True):
         # Capture frame-by-frame
         ret, frame = cap.read ()
         gray = cv2.cvtColor ( frame, cv2.COLOR_BGR2GRAY )
         faces = face_cascade.detectMultiScale ( gray, scaleFactor=1.5, minNeighbors=5 )
+
         for (x, y, w, h) in faces:
             # print(x,y,w,h)
             roi_gray = gray[y:y + h, x:x + w]  # (ycord_start, ycord_end)
@@ -63,9 +60,10 @@ def clicked():
                 stroke = 2
                 cv2.putText ( frame, name, (x, y), font, 1, color, stroke, cv2.LINE_AA )
 
-            img_item = "9.png"
-            cv2.imwrite (img_item, roi_color )
-            os.rename(img_item,path+'9.png')
+            img_item = "/"+str(pic_num)+".png"
+            pic_num=pic_num+1
+            cv2.imwrite ( path + img_item, roi_color )
+            # os.rename(img_item,path+'9.png')
             color = (255, 0, 0)  # BGR 0-255
             stroke = 2
             end_cord_x = x + w
@@ -76,18 +74,17 @@ def clicked():
         #	cv2.rectangle(roi_color,(ex,ey),(ex+ew,ey+eh),(0,255,0),2)
         # Display the resulting frame
         cv2.imshow ( 'frame', frame )
+        #while(True):
+        char=cv2.waitKey(20)
         if cv2.waitKey ( 20 ) & 0xFF == ord ( 'q' ):
             break
-
+        '''if char==ord('q'):
+            continue
+        #if char==ord('e'):
+            break'''
     # When everything done, release the capture
     cap.release ()
     cv2.destroyAllWindows ()
-
-
-btn2 = Button(window, text="Take a Snap",command =clicked)
-btn2.grid(column=5, row=1)
-#button3RUN
-def train():
     BASE_DIR = os.path.dirname ( os.path.abspath ( __file__ ) )
     image_dir = os.path.join ( BASE_DIR, "images" )
 
@@ -133,7 +130,20 @@ def train():
     recognizer.train ( x_train, np.array ( y_labels ) )
     recognizer.save ( "recognizers/face-trainner.yml" )
 
+    # When everything done, release the capture
 
-btn3 = Button(window, text="Train",command =train)
-btn3.grid(column=4, row=2)
+btn1 = Button(window, text="ENTER",command =mdir)
+btn1.grid(column=4, row=1)
+#button2
+#def clicked():
+
+# = Button(window, text="Take a Snap")
+#btn2.grid(column=5, row=1)
+#button3RUN
+#def train():
+
+
+
+#btn3 = Button(window, text="Detect")
+#btn3.grid(column=4, row=2)
 window.mainloop()
